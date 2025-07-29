@@ -1,3 +1,4 @@
+# Visual Studio
 .vs/
 bin/
 obj/
@@ -5,3 +6,10 @@ obj/
 *.suo
 *.cache
 *.log
+
+# Rider
+.idea/
+
+# Archivos de sistema
+.DS_Store
+Thumbs.db
