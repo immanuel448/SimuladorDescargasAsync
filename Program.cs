@@ -13,17 +13,30 @@ namespace SimuladorDescargasAsync
         // La palabra clave 'async' permite usar 'await' dentro del método
         static async Task Main()
         {
-            // Este mensaje se imprime inmediatamente al iniciar el programa
-            Console.WriteLine("Inicio de la descarga...");
+            // INICIO: DESCARGAS EN SERIE
+            Console.WriteLine("Inicio de descargas (en serie):");
 
-            // Llamamos a un método asincrónico que simula una descarga
-            // El uso de 'await' indica que el programa esperará a que termine esa tarea
+            // Aquí se espera a que termine la primera descarga ANTES de comenzar la segunda
             await SimularDescarga("archivo1.zip");
+            await SimularDescarga("archivo2.zip");
 
-            // Este mensaje se imprime solo después de que la descarga ha finalizado
-            Console.WriteLine("Descarga finalizada.");
-            Console.ReadKey();
+            // Ambas descargas se hacen una después de otra, no al mismo tiempo
+
+            Console.WriteLine("\nInicio de descargas (en paralelo):");
+
+            // Creamos las tareas SIN usar await aún.
+            // Esto lanza ambas tareas "al mismo tiempo" (es decir, sin esperar una antes que otra)
+            var tarea1 = SimularDescarga("archivo3.zip");
+            var tarea2 = SimularDescarga("archivo4.zip");
+
+            // Aquí esperamos a que ambas tareas terminen.
+            // Si cada una tarda 2 segundos, todo esto dura alrededor de 2 segundos en total, no 4.
+            await Task.WhenAll(tarea1, tarea2);
+
+            // Este mensaje se muestra cuando ambas descargas paralelas terminan
+            Console.WriteLine("Todas las descargas completadas.");
         }
+
 
         // Método asincrónico que simula la descarga de un archivo
         // Toma como parámetro el nombre del archivo a "descargar"
