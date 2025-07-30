@@ -14,17 +14,32 @@ namespace SimuladorDescargasAsync
         static async Task Main()
         {
             // Título de esta etapa
-            Console.WriteLine("Etapa 3: Descargas en paralelo con progreso individual\n");
+            Console.WriteLine("Etapa 4: Manejo de errores en tareas asincrónicas\n");
 
-            // Inicia dos tareas que simulan la descarga de archivos, mostrando el progreso de cada una
-            var tarea1 = SimularDescargaConProgreso("archivo5.zip");
-            var tarea2 = SimularDescargaConProgreso("archivo6.zip");
+            // Crea una lista de tareas simulando descargas
+            var tareas = new[]
+            {
+                SimularDescargaConError("archivo7.zip"),
+                SimularDescargaConError("fallido.zip"), // Ésta lanzará un error
+                SimularDescargaConError("archivo8.zip")
+            };
 
-            // Espera a que ambas tareas terminen
-            await Task.WhenAll(tarea1, tarea2);
+            try
+            {
+                // Espera a que todas las tareas terminen
+                // Si alguna lanza excepción, se captura abajo
+                await Task.WhenAll(tareas);
+            }
+            catch (Exception ex)
+            {
+                // Captura la excepción general
+                Console.WriteLine($"\n❌ Se produjo un error durante las descargas: {ex.Message}");
 
-            // Mensaje final cuando todas las descargas han concluido
-            Console.WriteLine("\nTodas las descargas completadas.");
+                Console.ReadKey();
+            }
+
+            // Mensaje final (se ejecuta incluso si hubo errores)
+            Console.WriteLine("\nProceso de descargas finalizado (con o sin errores).");
 
             Console.ReadKey();
         }
@@ -70,6 +85,22 @@ namespace SimuladorDescargasAsync
 
             // Cuando el bucle termina, muestra mensaje de descarga finalizada
             Console.WriteLine($"{nombreArchivo} descargado.");
+        }
+
+        // Simula una descarga, pero lanza excepción si el nombre es "fallido.zip"
+        static async Task SimularDescargaConError(string nombreArchivo)
+        {
+            Console.WriteLine($"Iniciando descarga de {nombreArchivo}...");
+
+            await Task.Delay(1000); // Simula descarga por 1 segundo
+
+            if (nombreArchivo == "fallido.zip")
+            {
+                // Simula un error
+                throw new Exception($"Error al descargar {nombreArchivo}");
+            }
+
+            Console.WriteLine($"{nombreArchivo} descargado correctamente.");
         }
     }
 }
