@@ -13,28 +13,20 @@ namespace SimuladorDescargasAsync
         // La palabra clave 'async' permite usar 'await' dentro del método
         static async Task Main()
         {
-            // INICIO: DESCARGAS EN SERIE
-            Console.WriteLine("Inicio de descargas (en serie):");
+            // Título de esta etapa
+            Console.WriteLine("Etapa 3: Descargas en paralelo con progreso individual\n");
 
-            // Aquí se espera a que termine la primera descarga ANTES de comenzar la segunda
-            await SimularDescarga("archivo1.zip");
-            await SimularDescarga("archivo2.zip");
+            // Inicia dos tareas que simulan la descarga de archivos, mostrando el progreso de cada una
+            var tarea1 = SimularDescargaConProgreso("archivo5.zip");
+            var tarea2 = SimularDescargaConProgreso("archivo6.zip");
 
-            // Ambas descargas se hacen una después de otra, no al mismo tiempo
-
-            Console.WriteLine("\nInicio de descargas (en paralelo):");
-
-            // Creamos las tareas SIN usar await aún.
-            // Esto lanza ambas tareas "al mismo tiempo" (es decir, sin esperar una antes que otra)
-            var tarea1 = SimularDescarga("archivo3.zip");
-            var tarea2 = SimularDescarga("archivo4.zip");
-
-            // Aquí esperamos a que ambas tareas terminen.
-            // Si cada una tarda 2 segundos, todo esto dura alrededor de 2 segundos en total, no 4.
+            // Espera a que ambas tareas terminen
             await Task.WhenAll(tarea1, tarea2);
 
-            // Este mensaje se muestra cuando ambas descargas paralelas terminan
-            Console.WriteLine("Todas las descargas completadas.");
+            // Mensaje final cuando todas las descargas han concluido
+            Console.WriteLine("\nTodas las descargas completadas.");
+
+            Console.ReadKey();
         }
 
 
@@ -50,6 +42,33 @@ namespace SimuladorDescargasAsync
             await Task.Delay(2000);
 
             // Mensaje cuando la "descarga" termina
+            Console.WriteLine($"{nombreArchivo} descargado.");
+        }
+
+        // Método asincrónico que simula la descarga de un archivo con progreso visible
+        static async Task SimularDescargaConProgreso(string nombreArchivo)
+        {
+            // Número de pasos para simular el progreso (por ejemplo, 5 pasos del 20%)
+            int pasos = 5;
+
+            // Tiempo de espera entre cada paso (en milisegundos)
+            int esperaPorPaso = 400;
+
+            // Bucle que simula el progreso de descarga
+            for (int i = 1; i <= pasos; i++)
+            {
+                // Calcula el porcentaje actual
+                int porcentaje = i * 100 / pasos;
+
+                // Muestra el progreso en consola
+                Console.WriteLine($"{nombreArchivo}: {porcentaje}% completado");
+
+                // Espera un poco antes de mostrar el siguiente porcentaje
+                // Esto simula que el archivo se está descargando por partes
+                await Task.Delay(esperaPorPaso);
+            }
+
+            // Cuando el bucle termina, muestra mensaje de descarga finalizada
             Console.WriteLine($"{nombreArchivo} descargado.");
         }
     }
